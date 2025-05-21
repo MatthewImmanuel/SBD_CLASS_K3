@@ -2,6 +2,25 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+
+function parseJwt(token) {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`)
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch (e) {
+    console.error('Failed to parse token', e);
+    return null;
+  }
+}
+
+
 export default function Login() {
   const navigate = useNavigate();
 
@@ -18,17 +37,56 @@ export default function Login() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // In a real app, you'd send this data to your backend
-    console.log('Logging in with:', formData);
 
-    // Simulate successful login
-    setTimeout(() => {
-      alert('Login successful!');
-      navigate('/dashboard'); // Redirect to dashboard or home
-    }, 500);
+    try {
+      const response = await fetch('http://localhost:4000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Login failed');
+      }
+
+      const { token } = result;
+
+      // Save token to localStorage
+      localStorage.setItem('token', token);
+
+      // Decode the token to get user info
+      const decodedToken = parseJwt(token);
+
+      if (!decodedToken) {
+        throw new Error('Invalid token');
+      }
+
+      const { id, role } = decodedToken;
+
+      // Optional: store decoded user info
+      localStorage.setItem('user', JSON.stringify({ id, role }));
+
+      // Redirect based on role
+      if (role === 'mahasiswa') {
+        navigate('/mahasiswa');
+      } else if (role === 'dosen') {
+        navigate('/dosen');
+      } else {
+        navigate('/');
+      }
+    } catch (error) {
+      alert(error.message);
+      console.error('Login error:', error);
+    }
   };
+
+
 
   return (
     <div className="min-h-screen w-screen bg-yellow-100 flex items-center justify-center">

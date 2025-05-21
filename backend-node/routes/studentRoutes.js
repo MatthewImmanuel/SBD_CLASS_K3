@@ -9,6 +9,12 @@ const router = express.Router();
 
 router.use(auth);
 
+router.get('/profile', async (req, res) => {
+  const student = await Student.findOne({ userId: req.user.id });
+  if (!student) return res.status(404).json({ error: 'Mahasiswa tidak ditemukan' });
+  res.json(student);
+});
+
 router.get('/courses', async (req, res) => {
   const courses = await Course.find();
   res.json(courses);
@@ -23,6 +29,12 @@ router.post('/enroll', async (req, res) => {
   const enrollment = new Enrollment({ student: student._id, course: courseId });
   await enrollment.save();
   res.status(201).json(enrollment);
+});
+
+router.get('/enrollments', async (req, res) => {
+  const student = await Student.findOne({ userId: req.user.id });
+  const enrollments = await Enrollment.find({ student: student._id }).populate('course');
+  res.json(enrollments);
 });
 
 router.get('/grades', async (req, res) => {

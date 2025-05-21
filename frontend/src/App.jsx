@@ -3,6 +3,7 @@ import Login from './pages/login';
 import HomeMahasiswa from './pages/home_mahasiswa';
 import HomeDosen from './pages/home_dosen';
 import CourseDetail from './pages/course_detail';
+import CourseManage from './pages/course_manage';
 import './App.css'
 
 function App() {
@@ -12,7 +13,8 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/mahasiswa" element={<HomeMahasiswa />} />
         <Route path="/dosen" element={<HomeDosen />} />
-        <Route path="/course/:id" element={<CourseDetail />} />
+        <Route path="/course" element={<CourseDetail />} />
+        <Route path="/manage/:courseId" element={<CourseManage />} />
         {/* Add more routes as needed */}
       </Routes>
     </div>

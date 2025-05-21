@@ -1,33 +1,67 @@
-// src/pages/home_dosen.jsx
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function HomeDosen() {
-  // Example static data – replace with API call later
-  const lecturerData = {
-    name: 'Dr. Budi Santoso',
-    nip: '198001012010011001',
-    role: 'Dosen',
-    courses: [
-      {
-        id: 'CS101',
-        name: 'Introduction to Computer Science',
-        studentsEnrolled: [
-          { id: '202101010101', name: 'Andi Saputra' },
-          { id: '202101010102', name: 'Siti Aminah' },
-          { id: '202101010103', name: 'Rizky Praditha' },
-        ],
-      },
-      {
-        id: 'CS202',
-        name: 'Data Structures and Algorithms',
-        studentsEnrolled: [
-          { id: '202101010104', name: 'Dewi Anggraini' },
-          { id: '202101010105', name: 'Fajar Setiawan' },
-        ],
-      },
-    ],
-  };
+  const [lecturerData, setLecturerData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [courses, setCourses] = useState([]);
+  const [coursesLoading, setCoursesLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+      const fetchLecturerData = async () => {
+        const token = localStorage.getItem('token');
+  
+        try {
+          {/* Fetch lecturer data */}
+          const response = await fetch('http://localhost:4000/api/lecturers/profile', {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+  
+          if (!response.ok) {
+            throw new Error('Failed to fetch lecturer data');
+          }
+  
+          const data = await response.json();
+          setLecturerData(data);
+
+          {/* Fetch courses taught by the lecturer */}
+          const coursesResponse = await fetch(`http://localhost:4000/api/lecturers/courses/${data._id}`, {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (!coursesResponse.ok) {
+            throw new Error('Failed to fetch courses');
+          }
+
+          const courseData = await coursesResponse.json();
+          setCourses(courseData);
+
+        } catch (error) {
+          console.error(error);
+          alert('Error loading lecturer data.');
+        } finally {
+          setLoading(false);
+          setCoursesLoading(false);
+        }
+      };
+  
+      fetchLecturerData();
+    }, []);
+  
+    if (loading) {
+      return <div>Loading...</div>;
+    }
+  
+    if (!lecturerData) {
+      return <div>No lecturer data available.</div>;
+    }
 
   return (
     <div className="min-h-screen w-screen bg-yellow-100 font-sans">
@@ -57,35 +91,30 @@ export default function HomeDosen() {
             </div>
             <div>
               <p className="text-sm text-gray-500">Role</p>
-              <p className="font-medium">{lecturerData.role}</p>
+              <p className="font-medium">Dosen</p>
             </div>
           </div>
         </div>
 
         {/* Courses Taught */}
-        <h2 className="text-xl font-semibold text-gray-700 mb-4 ">Courses Taught</h2>
-        <div className="space-y-8 mx-8">
-          {lecturerData.courses.map((course) => (
-            <div key={course.id} className="border border-gray-500 rounded-md p-4">
-              
-              <Link to={`/course/${course.id}`} className="text-lg font-semibold text-blue-600 hover:text-blue-800 hover:underline">
-                {course.name}
-              </Link>
+        <div className="mb-10">
+          <h2 className="text-2x1 font-semibold text-gray-700 mb-4">Courses Taught</h2>
 
-              <p className="text-sm text-gray-600 mt-1">Course ID: <span className="font-mono">{course.id}</span></p>
-
-              <div className="mt-3">
-                <p className="text-sm font-medium text-gray-700">Enrolled Students ({course.studentsEnrolled.length})</p>
-                <ul className="list-disc list-inside mt-2 space-y-1 pl-4">
-                  {course.studentsEnrolled.map((student) => (
-                    <li key={student.id} className="text-sm">
-                      {student.name} <span className="text-gray-500">({student.id})</span>
-                    </li>
-                  ))}
-                </ul>
+            {coursesLoading ? (<p>Loading courses...</p>) : courses.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {courses.map((course, index) => (
+                  <div key={index} className="border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+                    <h3 className="text-xl font-medium">{course.name}</h3>
+                    <p className="text-gray-600 text-sm mt-1">{course.code}</p>
+                    <button onClick={() => navigate(`/manage/${course._id}`)} className="mt-3 px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition">
+                      Detail
+                    </button>
+                  </div>
+              ))}
               </div>
-            </div>
-          ))}
+            ) : (
+              <p className="text-gray-500 italic">Belum mengampu mata kuliah.</p>
+            )}
         </div>
 
       </div>

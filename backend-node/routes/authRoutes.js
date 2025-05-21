@@ -12,7 +12,7 @@ router.post('/register', async (req, res) => {
     await user.save();
 
     if (user.role === 'mahasiswa') {
-      await new Student({ userId: user._id, name: req.body.name, nim: req.body.nim }).save();
+      await new Student({ userId: user._id, name: req.body.name, nim: req.body.nim, year: req.body.year, major: req.body.major, status: req.body.status }).save();
     } else {
       await new Lecturer({ userId: user._id, name: req.body.name, nip: req.body.nip }).save();
     }
