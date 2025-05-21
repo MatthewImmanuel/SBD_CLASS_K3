@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: '../frontend/.env' });
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -25,5 +25,5 @@ app.get('/', (req, res) => {
 });
 
 mongoose.connect(process.env.MONGODB_URI)
-  .then(() => app.listen(PORT, () => console.log(`Server running on port ${PORT}`)))
+  .then(() => app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`)))
   .catch(err => console.error('MongoDB connection error:', err));

@@ -1,39 +1,26 @@
+# docker-compose.yml
 version: '3.8'
 
 services:
-  mongo:
-    image: mongo:6.0
-    container_name: nosql-mongo
-    restart: always
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo-data:/data/db
-
-  backend-node:
-    build: ./backend-node
-    container_name: nosql-node
+  backend:
     env_file:
-      - .env
-      - backend-node/.env
-    depends_on:
-      - mongo
+      - ./frontend/.env
+    build:
+      context: ./backend-node
+      dockerfile: Dockerfile
     ports:
-      - "${PORT_NODE}:${PORT_NODE}"
-    environment:
-      - MONGO_URI=mongodb://mongo:27017/universityDB
+      - "4000:4000"
+    volumes:
+      - ./backend-node:/app
+    restart: unless-stopped
 
-  frontend-react:
-    build: ./frontend
-    container_name: nosql-react
+  frontend:
+    env_file:
+      - ./frontend/.env
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
-      - "${PORT_REACT}:${PORT_REACT}"
-    environment:
-      - PORT=${PORT_REACT}
-      - REACT_APP_API_URL=http://backend-node:${PORT_NODE} # Use Docker service name
+      - "80:80"
     depends_on:
-      - backend-node
-    restart: on-failure
-
-volumes:
-  mongo-data:
+      - backend

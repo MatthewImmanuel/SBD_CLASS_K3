@@ -1,20 +1,21 @@
-# Use official Node image
-FROM node:20
+# backend-node/Dockerfile
+# Use the official Node.js runtime as the base image
+FROM node:22
 
-# Set working directory
-WORKDIR /usr/src/app
+# Set the working directory in the container
+WORKDIR /app
 
-# Copy package files
+# Copy the package.json and package-lock.json files first
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm install --production
 
-# Copy rest of the app
+# Copy the rest of the application code
 COPY . .
 
-# Expose port
+# Expose the port that the app runs on
 EXPOSE 4000
 
-# Start the app
-CMD ["node", "server.js"]
+# Start the server
+CMD ["node", "index.js"]
