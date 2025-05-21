@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+const REACT_URL = import.meta.env.VITE_API_URL;
 
 export default function CourseManage() {
   const { courseId } = useParams();
@@ -12,7 +13,7 @@ export default function CourseManage() {
       const token = localStorage.getItem('token');
 
       try {
-        const response = await fetch(`http://localhost:4000/api/courses/enrollments/${courseId}`, {
+        const response = await fetch(`${REACT_URL}/api/courses/enrollments/${courseId}`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -40,7 +41,7 @@ export default function CourseManage() {
     const token = localStorage.getItem('token');
 
     try {
-      const response = await fetch(`http://localhost:4000/api/lecturers/editScore/${enrollmentId}`, {
+      const response = await fetch(`${REACT_URL}/api/lecturers/editScore/${enrollmentId}`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,

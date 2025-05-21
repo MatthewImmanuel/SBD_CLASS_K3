@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+const REACT_URL = import.meta.env.VITE_API_URL;
 
 export default function CourseDetail() {
   const [courses, setCourses] = useState([]);
@@ -12,7 +13,7 @@ export default function CourseDetail() {
       try {
         const token = localStorage.getItem('token');
 
-        const response = await fetch('http://localhost:4000/api/courses/', {
+        const response = await fetch(`${REACT_URL}/api/courses/`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -40,7 +41,7 @@ export default function CourseDetail() {
         try {
             const token = localStorage.getItem('token');
 
-            const response = await fetch('http://localhost:4000/api/students/enroll', {
+            const response = await fetch(`${REACT_URL}/api/students/enroll`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -68,7 +69,7 @@ export default function CourseDetail() {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`http://localhost:4000/api/lecturers/profile/${lecturerId}`, {
+      const response = await fetch(`${REACT_URL}/api/lecturers/profile/${lecturerId}`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,

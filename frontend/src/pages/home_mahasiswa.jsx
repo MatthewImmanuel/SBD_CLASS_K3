@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+const REACT_URL = import.meta.env.VITE_API_URL;
 
 export default function HomeMahasiswa() {
   const [studentData, setStudentData] = useState(null);
@@ -13,7 +14,7 @@ export default function HomeMahasiswa() {
       const token = localStorage.getItem('token');
 
       try {
-        const response = await fetch('http://localhost:4000/api/students/profile', {
+        const response = await fetch(`${REACT_URL}/api/students/profile`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -28,7 +29,7 @@ export default function HomeMahasiswa() {
         setStudentData(data);
 
         // Fetch enrollments after student data is fetched
-        const enrollResponse = await fetch('http://localhost:4000/api/students/enrollments', {
+        const enrollResponse = await fetch(`${REACT_URL}/api/students/enrollments`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,

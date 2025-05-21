@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+const REACT_URL = import.meta.env.VITE_API_URL;
 
 export default function HomeDosen() {
   const [lecturerData, setLecturerData] = useState(null);
@@ -14,7 +15,7 @@ export default function HomeDosen() {
   
         try {
           {/* Fetch lecturer data */}
-          const response = await fetch('http://localhost:4000/api/lecturers/profile', {
+          const response = await fetch(`${REACT_URL}/api/lecturers/profile`, {
             method: 'GET',
             headers: {
               Authorization: `Bearer ${token}`,
@@ -29,7 +30,7 @@ export default function HomeDosen() {
           setLecturerData(data);
 
           {/* Fetch courses taught by the lecturer */}
-          const coursesResponse = await fetch(`http://localhost:4000/api/lecturers/courses/${data._id}`, {
+          const coursesResponse = await fetch(`${REACT_URL}/api/lecturers/courses/${data._id}`, {
             method: 'GET',
             headers: {
               Authorization: `Bearer ${token}`,

@@ -1,4 +1,5 @@
 version: '3.8'
+
 services:
   mongo:
     image: mongo:6.0
@@ -19,6 +20,20 @@ services:
       - mongo
     ports:
       - "${PORT_NODE}:${PORT_NODE}"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/universityDB
+
+  frontend-react:
+    build: ./frontend
+    container_name: nosql-react
+    ports:
+      - "${PORT_REACT}:${PORT_REACT}"
+    environment:
+      - PORT=${PORT_REACT}
+      - REACT_APP_API_URL=http://backend-node:${PORT_NODE} # Use Docker service name
+    depends_on:
+      - backend-node
+    restart: on-failure
 
 volumes:
   mongo-data:
