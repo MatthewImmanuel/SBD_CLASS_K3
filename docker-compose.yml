@@ -12,6 +12,7 @@ services:
       - "4000:4000"
     volumes:
       - ./backend-node:/app
+    image: adi59162/k3_sbd_class:backend
     restart: unless-stopped
 
   frontend:
@@ -22,5 +23,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "80:80"
+    image: adi59162/k3_sbd_class:frontend
     depends_on:
       - backend
